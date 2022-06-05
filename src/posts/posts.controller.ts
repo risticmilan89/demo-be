@@ -16,8 +16,24 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  create(
+    @Body()
+    createPostDto: {
+      title: string;
+      body: string;
+      authorUsername: string;
+    },
+  ) {
+    const { title, body, authorUsername } = createPostDto;
+    return this.postsService.create({
+      title,
+      body,
+      author: {
+        connect: {
+          username: authorUsername,
+        },
+      },
+    });
   }
 
   @Get()

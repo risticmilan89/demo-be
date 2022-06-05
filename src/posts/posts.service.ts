@@ -10,7 +10,8 @@ export class PostsService {
 
   create(createPostDto: Prisma.PostCreateInput) {
     return this.prisma.post.create({ data: createPostDto }).catch((err) => {
-      // console.log('post create err', { err });
+      console.log(err);
+
       throw new BadRequestException('Post title already exists');
     });
   }
