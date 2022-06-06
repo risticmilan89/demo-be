@@ -6,32 +6,31 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   create(
     @Body()
     createPostDto: {
       title: string;
       body: string;
-      authorUsername: string;
+      username: string;
     },
   ) {
-    const { title, body, authorUsername } = createPostDto;
+    const { title, body, username } = createPostDto;
     return this.postsService.create({
       title,
       body,
       author: {
-        connect: {
-          username: authorUsername,
-        },
+        connect: { username },
       },
     });
   }
@@ -39,6 +38,11 @@ export class PostsController {
   @Get()
   findAll() {
     return this.postsService.findAll();
+  }
+
+  @Get(':username')
+  findAllByAuthor(@Param('username') username: string) {
+    return this.postsService.findAllByUsername(username);
   }
 
   // @Get(':id')

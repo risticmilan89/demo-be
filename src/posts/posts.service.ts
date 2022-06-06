@@ -1,7 +1,5 @@
 import { PrismaService } from 'src/prisma.service';
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, Prisma } from '@prisma/client';
 
 @Injectable()
@@ -10,14 +8,25 @@ export class PostsService {
 
   create(createPostDto: Prisma.PostCreateInput) {
     return this.prisma.post.create({ data: createPostDto }).catch((err) => {
-      console.log(err);
-
       throw new BadRequestException('Post title already exists');
     });
   }
 
   findAll(): Promise<Post[]> {
-    return this.prisma.post.findMany();
+    return this.prisma.post.findMany({
+      include: { author: { select: { username: true } } },
+    });
+  }
+
+  findAllByUsername(username: string): Promise<Post[]> {
+    return this.prisma.post.findMany({
+      include: { author: { select: { username: true } } },
+      where: {
+        author: {
+          username,
+        },
+      },
+    });
   }
 
   // findOne(id: number) {

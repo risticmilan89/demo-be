@@ -9,7 +9,7 @@ import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { User } from '@prisma/client';
 
-const jwtSecret = process.env.JWT_SECRET || 'secret2022d';
+import { jwtSecret } from '../config';
 
 @Injectable()
 export class AuthService {
@@ -43,6 +43,7 @@ export class AuthService {
         email: user.email,
       },
       jwtSecret,
+      { expiresIn: '30s' },
     );
   }
 }
